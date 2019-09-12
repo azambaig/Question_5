@@ -1,5 +1,6 @@
 const db = require('../database/db');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 
 const userModel = db.connection.define('user', {
@@ -12,7 +13,7 @@ const userModel = db.connection.define('user', {
     confirmPassword: {
         type: db.Sequelize.STRING
     },
-    emailId :{
+    emailId: {
         type: db.Sequelize.STRING
     }
 },
@@ -22,7 +23,7 @@ const userModel = db.connection.define('user', {
     }
 );
 
-userModel.sync({ force: true })
+userModel.sync({ force: false })
     .then(() => {
         console.log(' Table created connection successful');
     })
@@ -55,12 +56,18 @@ const checkUser = async (body) => {
     try {
         let matchDetails = await bcrypt.compare(body.confirmPassword, body.Password);
         if (matchDetails) {
-            let user_id = userModel.findOne({
-                where : {
-                    emailId : body.emailId
+            return userModel.findOne({
+                where: {
+                    emailId: body.emailId
                 }
+            }).then(user => {
+                const token = jwt.sign({
+                    token: user.id,
+                }, "secret_Key", {
+                        expiresIn: '1h'
+                    });
+                return token;
             });
-            return user_id;
         } else {
             return `Details not Matched.`
         }
@@ -70,7 +77,39 @@ const checkUser = async (body) => {
     }
 };
 
+const findDetails = async (token) => {
+    let findUser = await userModel.findOne({
+        where:
+        {
+            id: token
+        }
+    });
+    if (findUser) {
+        return findUser;
+    } else {
+        return 'Data Not found'
+    }
+}
+
+const deleteDetails = async (token) => {
+    let deleteUser = await userModel.destroy({
+        where:
+        {
+            id: token
+        }
+    });
+    return `Data Deleted`;
+}
+
+const pageDetails = async (page) => {
+    let getPageDetails = await userModel.findAll();
+    return getPageDetails;
+}
+
 module.exports = {
     unique,
-    checkUser
+    checkUser,
+    findDetails,
+    deleteDetails,
+    pageDetails
 };
