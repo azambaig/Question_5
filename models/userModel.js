@@ -103,6 +103,7 @@ const deleteDetails = async (token) => {
 
 const pageDetails = async (page) => {
     let getPageDetails = await userModel.findAll();
+    let pageCount = await userModel.count
     return getPageDetails;
 }
 

@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
+const userAddressModel = require('../models/userAddressModel');
 const jwt = require('jsonwebtoken');
 
 const registration = async (req, res) => {
@@ -59,10 +60,53 @@ const getPage = async (req, res) => {
     }
 }
 
+const insertAddress = async (req, res) => {
+    try {
+        let insertUsersProfile = await userAddressModel.insertUserAddress(req.body);
+        res.send(insertUsersProfile);
+    } catch (error) {
+        res.send(401).send(error);
+    }
+};
+
+const getAddress = async(req, res) => {
+    try{
+        let getUsersAddress = await userAddressModel.getUserAddress(req.body)
+        res.send(getUsersAddress)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
+
+const updateAddress = async(req, res) => {
+    try{
+        let updateUsersAddress = await userAddressModel.updateUserAddress(req.body)
+        res.send(updateUsersAddress)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
+const deleteAddress = async(req, res) => {
+    try{
+        let deleteUsersAddress = await userAddressModel.deleteUserAddress(req.body)
+        res.send(deleteUsersAddress)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
+
 module.exports = {
     registration,
     login,
     findUser,
     deleteUser,
-    getPage
+    getPage,
+    insertAddress,
+    getAddress,
+    updateAddress,
+    deleteAddress
+
 };
