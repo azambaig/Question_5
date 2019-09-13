@@ -7,7 +7,7 @@ const checkToken = (req, res, next) => {
             next(res.status(401).send({ error: "Invalid Token" }));
         }
         else {
-            req.token = docs.token;
+            req.convertedToken = docs.token;
             next();
         }
     })
