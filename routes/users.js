@@ -13,4 +13,12 @@ router.get('/delete', auth.checkToken, userController.deleteUser);
 
 router.get('/list/:page', userController.getPage);
 
+router.post('/address/insert', auth.checkToken, userController.insertAddress);
+
+router.get('/address/get', auth.checkToken, userController.getAddress);
+
+router.post('/address/update', auth.checkToken, userController.updateAddress);
+
+router.delete('/address/delete', auth.checkToken, userController.deleteAddress);
+
 module.exports = router;

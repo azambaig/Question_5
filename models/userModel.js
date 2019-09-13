@@ -1,9 +1,16 @@
 const db = require('../database/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const model = require('./userAddressModel');
 
 
 const userModel = db.connection.define('user', {
+    id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: db.Sequelize.INTEGER
+    },
     userName: {
         type: db.Sequelize.STRING
     },
@@ -23,6 +30,7 @@ const userModel = db.connection.define('user', {
     }
 );
 
+
 userModel.sync({ force: false })
     .then(() => {
         console.log(' Table created connection successful');
@@ -31,6 +39,9 @@ userModel.sync({ force: false })
         console.error('Unable to connect to database', err);
     });
 
+userModel.associate = function (model) {
+    userModel.hasMany(model.userAddressModel)
+}
 
 let unique = async (body) => {
     try {
@@ -40,8 +51,7 @@ let unique = async (body) => {
             }
         });
         if (result === null) {
-            const newSaveObj = new userModel(body);
-            let insertedData = await newSaveObj.save();
+            let insertedData = await userModel.create(body);
             return insertedData;
         } else {
             return `Data already exists`;
@@ -78,31 +88,42 @@ const checkUser = async (body) => {
 };
 
 const findDetails = async (token) => {
-    let findUser = await userModel.findOne({
-        where:
-        {
-            id: token
+    try {
+        let findUser = await userModel.findOne({
+            where:
+            {
+                id: token
+            }
+        });
+        if (findUser) {
+            return findUser;
+        } else {
+            throw 'Data Not found'
         }
-    });
-    if (findUser) {
-        return findUser;
-    } else {
-        return 'Data Not found'
+    } catch (error) {
+        return error
     }
 }
 
 const deleteDetails = async (token) => {
-    let deleteUser = await userModel.destroy({
-        where:
-        {
-            id: token
-        }
-    });
-    return `Data Deleted`;
+    try {
+        let deleteUser = await userModel.destroy({
+            where:
+            {
+                id: token
+            }
+        });
+        throw `Data Deleted`;
+
+    } catch (error) {
+        return error
+    }
+
 }
 
 const pageDetails = async (page) => {
     let getPageDetails = await userModel.findAll();
+    let pageCount = await userModel.count
     return getPageDetails;
 }
 
@@ -111,5 +132,6 @@ module.exports = {
     checkUser,
     findDetails,
     deleteDetails,
-    pageDetails
+    pageDetails,
+    userModel
 };
