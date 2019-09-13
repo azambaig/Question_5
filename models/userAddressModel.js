@@ -85,7 +85,7 @@ const updateUserAddress = async (token, body) => {
             }
         })
         if (findData === null) {
-            return `Data not found`;
+            throw `Data not found`;
         } else {
             let updateData = await findData.update({
                 address: body.address,
