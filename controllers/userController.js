@@ -62,7 +62,7 @@ const getPage = async (req, res) => {
 
 const insertAddress = async (req, res) => {
     try {
-        let insertUsersProfile = await userAddressModel.insertUserAddress(req.body);
+        let insertUsersProfile = await userAddressModel.insertUserAddress(req.token, req.body);
         res.send(insertUsersProfile);
     } catch (error) {
         res.send(401).send(error);
@@ -71,17 +71,16 @@ const insertAddress = async (req, res) => {
 
 const getAddress = async(req, res) => {
     try{
-        let getUsersAddress = await userAddressModel.getUserAddress(req.body)
+        let getUsersAddress = await userAddressModel.getUserAddress(req.token)
         res.send(getUsersAddress)
     } catch (error) {
         res.status(401).send(error);
     }
 }
 
-
 const updateAddress = async(req, res) => {
     try{
-        let updateUsersAddress = await userAddressModel.updateUserAddress(req.body)
+        let updateUsersAddress = await userAddressModel.updateUserAddress(req.token, req.body)
         res.send(updateUsersAddress)
     } catch (error) {
         res.status(401).send(error);
@@ -90,13 +89,12 @@ const updateAddress = async(req, res) => {
 
 const deleteAddress = async(req, res) => {
     try{
-        let deleteUsersAddress = await userAddressModel.deleteUserAddress(req.body)
+        let deleteUsersAddress = await userAddressModel.deleteUserAddress(req.token, req.body)
         res.send(deleteUsersAddress)
     } catch (error) {
         res.status(401).send(error);
     }
 }
-
 
 module.exports = {
     registration,

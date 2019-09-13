@@ -1,8 +1,20 @@
 const db = require('../database/db');
+const userModel = require('./userModel');
 
 const userAddressModel = db.connection.define('userAddress', {
+    id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: db.Sequelize.INTEGER
+    },
     userId: {
-        type: db.Sequelize.STRING
+        type: db.Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'user',
+            key: 'id'
+        }
     },
     address: {
         type: db.Sequelize.STRING
@@ -33,34 +45,30 @@ userAddressModel.sync({ force: false })
         console.error('Unable to connect to database', err);
     });
 
-const insertUserAddress = async (body) => {
+userAddressModel.associate = function (model) {
+    userAddressModel.belongsTo(model.userModel)
+}
+
+const insertUserAddress = async (token, body) => {
     try {
-        let findData = await userAddressModel.findAll({
-            where: {
-                userId: body.userId
-            }
-        })
-        if (findData === null) {
-            let insertAddress = await userAddressModel.create(body);
-            return insertAddress;
-        } else {
-            let insertAddress = await userAddressModel.create(body);
-            return findData;
-        }
+        let findData = body;
+        findData.userId = token;
+        let insertAddress = await userAddressModel.create(findData);
+        return insertAddress;
     } catch (error) {
         return error;
     }
 }
 
-const getUserAddress = async (body) => {
+const getUserAddress = async (token) => {
     try {
         let findData = await userAddressModel.findAll({
             where: {
-                userId: body.userId
+                userId: token
             }
         })
         if (findData === null) {
-            return `Data not found`;
+            throw `Data not found`;
         } else {
             return findData;
         }
@@ -69,12 +77,11 @@ const getUserAddress = async (body) => {
     }
 }
 
-
-const updateUserAddress = async (body) => {
+const updateUserAddress = async (token, body) => {
     try {
         let findData = await userAddressModel.findOne({
             where: {
-                id: body.id
+                userId: token
             }
         })
         if (findData === null) {
@@ -87,22 +94,22 @@ const updateUserAddress = async (body) => {
                 pinCode: body.pinCode,
                 phoneNo: body.phoneNo
             })
-            return updateData
+            return updateData;
         }
     } catch (error) {
         return error;
     }
 }
 
-const deleteUserAddress = async (body) => {
+const deleteUserAddress = async (token, body) => {
     try {
         let deleteUsersAddress = await userAddressModel.destroy({
             where: {
-                userId: body.userId,
+                userId: token,
                 address: body.address
             }
         });
-        return `Data Deleted`;
+        throw `Data Deleted`;
     } catch (error) {
         return error;
     }
@@ -112,6 +119,7 @@ module.exports = {
     insertUserAddress,
     getUserAddress,
     updateUserAddress,
-    deleteUserAddress
+    deleteUserAddress,
+    userAddressModel
 };
 
