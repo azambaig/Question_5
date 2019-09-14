@@ -21,4 +21,12 @@ router.post('/address/update', auth.checkToken, userController.updateAddress);
 
 router.delete('/address/delete', auth.checkToken, userController.deleteAddress);
 
+router.post('/role/insert', auth.checkToken, userController.insertRole);
+
+router.get('/role/get', auth.checkToken, userController.getRole);
+
+router.post('/role/update', auth.checkToken, userController.updateRole);
+
+router.delete('/role/delete', auth.checkToken, userController.deleteRole);
+
 module.exports = router;

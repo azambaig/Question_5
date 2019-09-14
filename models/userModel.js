@@ -6,10 +6,10 @@ const model = require('./userAddressModel');
 
 const userModel = db.connection.define('user', {
     id: {
+        type: db.Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
-        type: db.Sequelize.INTEGER
+        primaryKey: true
     },
     userName: {
         type: db.Sequelize.STRING
@@ -41,6 +41,7 @@ userModel.sync({ force: false })
 
 userModel.associate = function (model) {
     userModel.hasMany(model.userAddressModel)
+    userModel.hasMany(model.userRoleModel)
 }
 
 let unique = async (body) => {
@@ -74,8 +75,8 @@ const checkUser = async (body) => {
                 const token = jwt.sign({
                     token: user.id,
                 }, "secret_Key", {
-                        expiresIn: '1h'
-                    });
+                    expiresIn: '1h'
+                });
                 return token;
             });
         } else {

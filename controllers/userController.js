@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
 const userAddressModel = require('../models/userAddressModel');
-const jwt = require('jsonwebtoken');
+const userRoleModel = require('../models/userRole');
 
 const registration = async (req, res) => {
     try {
@@ -96,6 +96,43 @@ const deleteAddress = async (req, res) => {
     }
 }
 
+const insertRole = async (req, res) => {
+    try {
+        let insertUsersRole = await userRoleModel.insertUserRole(req.convertedToken, req.body);
+        res.send(insertUsersRole);
+    } catch (error) {
+        res.send(401).send(error);
+    }
+};
+
+const getRole = async (req, res) => {
+    try {
+        let getUsersRole = await userRoleModel.getUserRole(req.convertedToken)
+        res.send(getUsersRole)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
+const updateRole = async (req, res) => {
+    try {
+        let updateUsersRole = await userRoleModel.updateUserRole(req.convertedToken, req.body)
+        res.send(updateUsersRole)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
+const deleteRole = async (req, res) => {
+    try {
+        let deleteUsersRole = await userRoleModel.deleteUserRole(req.convertedToken, req.body)
+        res.send(deleteUsersRole)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
+
 module.exports = {
     registration,
     login,
@@ -105,6 +142,9 @@ module.exports = {
     insertAddress,
     getAddress,
     updateAddress,
-    deleteAddress
-
+    deleteAddress,
+    insertRole,
+    getRole,
+    updateRole,
+    deleteRole
 };
