@@ -41,7 +41,7 @@ const createUserRole = async (body) => {
         } else {
             let insertRole = await userRoleModel.create(body);
             let token = await jwt.sign({
-                token: insertRole.id,
+                token: insertRole,
             }, "secret_Key", {
                 expiresIn: '2h'
             });

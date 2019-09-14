@@ -21,12 +21,12 @@ router.post('/address/update', auth.checkToken, userController.updateAddress);
 
 router.delete('/address/delete', auth.checkToken, userController.deleteAddress);
 
-router.post('/role/create', userController.createRole);
+router.post('/role/create', auth.checkAdmin, userController.createRole);
 
-router.get('/role/get', userController.getRole);
+router.get('/role/get', auth.checkAdmin, userController.getRole);
 
-router.post('/role/update', userController.updateRole);
+router.post('/role/update', auth.checkAdmin, userController.updateRole);
 
-router.delete('/role/delete', userController.deleteRole);
+router.delete('/role/delete', auth.checkAdmin, userController.deleteRole);
 
 module.exports = router;
