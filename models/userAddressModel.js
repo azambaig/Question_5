@@ -3,10 +3,10 @@ const userModel = require('./userModel');
 
 const userAddressModel = db.connection.define('userAddress', {
     id: {
+        type: db.Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
-        type: db.Sequelize.INTEGER
+        primaryKey: true
     },
     userId: {
         type: db.Sequelize.INTEGER,

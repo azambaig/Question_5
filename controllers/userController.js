@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
 const userAddressModel = require('../models/userAddressModel');
-const jwt = require('jsonwebtoken');
+const userRoleModel = require('../models/userRole');
 
 const registration = async (req, res) => {
     try {
@@ -9,8 +9,7 @@ const registration = async (req, res) => {
             let salt = bcrypt.genSaltSync(10);
             let hash = bcrypt.hashSync(req.body.Password, salt);
             req.body.Password = hash;
-
-            let uniqueData = await userModel.unique(req.body);
+            let uniqueData = await userModel.unique(req.convertedToken, req.body);
             res.send(uniqueData);
         }
     } catch (error) {
@@ -96,6 +95,42 @@ const deleteAddress = async (req, res) => {
     }
 }
 
+const createRole = async (req, res) => {
+    try {
+        let createUsersRole = await userRoleModel.createUserRole(req.body);
+        res.send(createUsersRole);
+    } catch (error) {
+        res.send(401).send(error);
+    }
+};
+
+const getRole = async (req, res) => {
+    try {
+        let getUsersRole = await userRoleModel.getUserRole()
+        res.send(getUsersRole)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
+const updateRole = async (req, res) => {
+    try {
+        let updateUsersRole = await userRoleModel.updateUserRole(req.body)
+        res.send(updateUsersRole)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
+const deleteRole = async (req, res) => {
+    try {
+        let deleteUsersRole = await userRoleModel.deleteUserRole(req.body)
+        res.send(deleteUsersRole)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
 module.exports = {
     registration,
     login,
@@ -105,6 +140,9 @@ module.exports = {
     insertAddress,
     getAddress,
     updateAddress,
-    deleteAddress
-
+    deleteAddress,
+    createRole,
+    getRole,
+    updateRole,
+    deleteRole
 };
