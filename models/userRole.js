@@ -1,5 +1,5 @@
 const db = require('../database/db');
-
+const jwt = require('jsonwebtoken');
 
 const userRoleModel = db.connection.define('userRole', {
     id: {
@@ -7,14 +7,6 @@ const userRoleModel = db.connection.define('userRole', {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true
-    },
-    roleId: {
-        type: db.Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'user',
-            key: 'id'
-        }
     },
     roleName: {
         type: db.Sequelize.STRING
@@ -34,15 +26,28 @@ userRoleModel.sync({ force: false })
     });
 
 userRoleModel.associate = function (model) {
-    userRoleModel.belongsTo(model.userModel);
+    userRoleModel.hasMany(model.userModel);
 }
 
-const insertUserRole = async (token, body) => {
+const createUserRole = async (body) => {
     try {
-        let data = body;
-        data.roleId = token;
-        let insertRole = await userRoleModel.create(data);
-        return insertRole;
+        let findData = await userRoleModel.findOne({
+            where: {
+                roleName: body.roleName
+            }
+        })
+        if (findData) {
+            throw `Data already exist`
+        } else {
+            let insertRole = await userRoleModel.create(body);
+            let token = await jwt.sign({
+                token: insertRole.id,
+            }, "secret_Key", {
+                expiresIn: '2h'
+            });
+            return token;
+        }
+
     } catch (error) {
         return error;
     }
@@ -50,11 +55,7 @@ const insertUserRole = async (token, body) => {
 
 const getUserRole = async (token) => {
     try {
-        let findData = await userRoleModel.findAll({
-            where: {
-                roleId: token
-            }
-        })
+        let findData = await userRoleModel.findAll({});
         if (findData === null) {
             throw `Data not found`;
         } else {
@@ -65,12 +66,11 @@ const getUserRole = async (token) => {
     }
 }
 
-const updateUserRole = async (token, body) => {
+const updateUserRole = async (body) => {
     try {
         let findData = await userRoleModel.findOne({
             where: {
-                roleId: token,
-                roleName : body.roleToBeUpdate
+                roleName: body.roleToBeUpdate
             }
         })
         if (findData === null) {
@@ -86,12 +86,11 @@ const updateUserRole = async (token, body) => {
     }
 }
 
-const deleteUserRole = async (token, body) => {
+const deleteUserRole = async (body) => {
     try {
         let deleteData = await userRoleModel.destroy({
             where: {
-                roleId: token,
-                roleName : body.roleName
+                roleName: body.roleName
             }
         })
         throw `Data Deleted`
@@ -102,7 +101,7 @@ const deleteUserRole = async (token, body) => {
 
 module.exports = {
     userRoleModel,
-    insertUserRole,
+    createUserRole,
     getUserRole,
     updateUserRole,
     deleteUserRole

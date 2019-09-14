@@ -3,13 +3,13 @@ var router = express.Router();
 const userController = require('../controllers/userController');
 const auth = require('../middlewares/auth');
 
-router.post('/registration', userController.registration);
+router.post('/registration', auth.authenticateRole, userController.registration);
 
 router.post('/login', userController.login);
 
 router.get('/get', auth.checkToken, userController.findUser);
 
-router.get('/delete', auth.checkToken, userController.deleteUser);
+router.delete('/delete', auth.checkToken, userController.deleteUser);
 
 router.get('/list/:page', userController.getPage);
 
@@ -21,12 +21,12 @@ router.post('/address/update', auth.checkToken, userController.updateAddress);
 
 router.delete('/address/delete', auth.checkToken, userController.deleteAddress);
 
-router.post('/role/insert', auth.checkToken, userController.insertRole);
+router.post('/role/create', userController.createRole);
 
-router.get('/role/get', auth.checkToken, userController.getRole);
+router.get('/role/get', userController.getRole);
 
-router.post('/role/update', auth.checkToken, userController.updateRole);
+router.post('/role/update', userController.updateRole);
 
-router.delete('/role/delete', auth.checkToken, userController.deleteRole);
+router.delete('/role/delete', userController.deleteRole);
 
 module.exports = router;

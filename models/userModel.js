@@ -22,7 +22,15 @@ const userModel = db.connection.define('user', {
     },
     emailId: {
         type: db.Sequelize.STRING
-    }
+    },
+    roleId: {
+        type: db.Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'userRole',
+            key: 'id'
+        }
+    } 
 },
     {
         tablename: 'user',
@@ -41,10 +49,10 @@ userModel.sync({ force: false })
 
 userModel.associate = function (model) {
     userModel.hasMany(model.userAddressModel)
-    userModel.hasMany(model.userRoleModel)
+    userModel.belongsTo(model.userRoleModel)
 }
 
-let unique = async (body) => {
+let unique = async (token, body) => {
     try {
         let result = await userModel.findOne({
             where: {
@@ -52,6 +60,8 @@ let unique = async (body) => {
             }
         });
         if (result === null) {
+            let data = body;
+            data.roleId = token;
             let insertedData = await userModel.create(body);
             return insertedData;
         } else {

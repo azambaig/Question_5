@@ -9,8 +9,7 @@ const registration = async (req, res) => {
             let salt = bcrypt.genSaltSync(10);
             let hash = bcrypt.hashSync(req.body.Password, salt);
             req.body.Password = hash;
-
-            let uniqueData = await userModel.unique(req.body);
+            let uniqueData = await userModel.unique(req.convertedToken, req.body);
             res.send(uniqueData);
         }
     } catch (error) {
@@ -96,10 +95,10 @@ const deleteAddress = async (req, res) => {
     }
 }
 
-const insertRole = async (req, res) => {
+const createRole = async (req, res) => {
     try {
-        let insertUsersRole = await userRoleModel.insertUserRole(req.convertedToken, req.body);
-        res.send(insertUsersRole);
+        let createUsersRole = await userRoleModel.createUserRole(req.body);
+        res.send(createUsersRole);
     } catch (error) {
         res.send(401).send(error);
     }
@@ -107,7 +106,7 @@ const insertRole = async (req, res) => {
 
 const getRole = async (req, res) => {
     try {
-        let getUsersRole = await userRoleModel.getUserRole(req.convertedToken)
+        let getUsersRole = await userRoleModel.getUserRole()
         res.send(getUsersRole)
     } catch (error) {
         res.status(401).send(error);
@@ -116,7 +115,7 @@ const getRole = async (req, res) => {
 
 const updateRole = async (req, res) => {
     try {
-        let updateUsersRole = await userRoleModel.updateUserRole(req.convertedToken, req.body)
+        let updateUsersRole = await userRoleModel.updateUserRole(req.body)
         res.send(updateUsersRole)
     } catch (error) {
         res.status(401).send(error);
@@ -125,13 +124,12 @@ const updateRole = async (req, res) => {
 
 const deleteRole = async (req, res) => {
     try {
-        let deleteUsersRole = await userRoleModel.deleteUserRole(req.convertedToken, req.body)
+        let deleteUsersRole = await userRoleModel.deleteUserRole(req.body)
         res.send(deleteUsersRole)
     } catch (error) {
         res.status(401).send(error);
     }
 }
-
 
 module.exports = {
     registration,
@@ -143,7 +141,7 @@ module.exports = {
     getAddress,
     updateAddress,
     deleteAddress,
-    insertRole,
+    createRole,
     getRole,
     updateRole,
     deleteRole
