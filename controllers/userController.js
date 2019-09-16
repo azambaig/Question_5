@@ -3,6 +3,7 @@ const userModel = require('../models/userModel');
 const userAddressModel = require('../models/userAddressModel');
 const userRoleModel = require('../models/userRole');
 const scrappingModel = require('../models/flipkartModel');
+const imageModel = require('../models/imageModel');
 
 
 const registration = async (req, res) => {
@@ -142,6 +143,25 @@ const fetchMobiles = async (req, res) => {
     }
 };
 
+const uploadImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            console.log("No file received");
+            return res.send({
+                success: false
+            });
+
+        } else {
+            console.log('file received');
+            return res.send({
+                success: true
+            })
+        }
+    } catch (error) {
+        res.status(401).send(error);
+    }
+}
+
 
 module.exports = {
     registration,
@@ -157,5 +177,6 @@ module.exports = {
     getRole,
     updateRole,
     deleteRole,
-    fetchMobiles
+    fetchMobiles,
+    uploadImage
 };
