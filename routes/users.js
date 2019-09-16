@@ -29,4 +29,7 @@ router.post('/role/update', auth.checkAdmin, userController.updateRole);
 
 router.delete('/role/delete', auth.checkAdmin, userController.deleteRole);
 
+router.post('/flipkart/mobile', userController.fetchMobiles);
+
+
 module.exports = router;

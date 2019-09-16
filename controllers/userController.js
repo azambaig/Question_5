@@ -2,6 +2,8 @@ const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
 const userAddressModel = require('../models/userAddressModel');
 const userRoleModel = require('../models/userRole');
+const scrappingModel = require('../models/flipkartModel');
+
 
 const registration = async (req, res) => {
     try {
@@ -131,6 +133,16 @@ const deleteRole = async (req, res) => {
     }
 }
 
+const fetchMobiles = async (req, res) => {
+    try {
+        let scrapDetails = await scrappingModel.scrappingDetails(req.body);
+        res.send(scrapDetails)
+    } catch (error) {
+        res.status(401).send(error);
+    }
+};
+
+
 module.exports = {
     registration,
     login,
@@ -144,5 +156,6 @@ module.exports = {
     createRole,
     getRole,
     updateRole,
-    deleteRole
+    deleteRole,
+    fetchMobiles
 };
