@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const multer = require('../models/imageModel');
 const userController = require('../controllers/userController');
 const auth = require('../middlewares/auth');
 
@@ -30,6 +31,8 @@ router.post('/role/update', auth.checkAdmin, userController.updateRole);
 router.delete('/role/delete', auth.checkAdmin, userController.deleteRole);
 
 router.post('/flipkart/mobile', userController.fetchMobiles);
+
+router.post('/profile/upload', multer.upload.single('image'), auth.checkToken, userController.uploadImage);
 
 
 module.exports = router;
