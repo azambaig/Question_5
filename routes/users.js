@@ -32,7 +32,7 @@ router.delete('/role/delete', auth.checkAdmin, userController.deleteRole);
 
 router.post('/flipkart/mobile', userController.fetchMobiles);
 
-router.post('/profile/upload', multer.upload.single('image') ,userController.uploadImage);
+router.post('/profile/upload', multer.upload.single('image'), auth.checkToken, userController.uploadImage);
 
 
 module.exports = router;

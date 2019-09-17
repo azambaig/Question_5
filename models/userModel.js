@@ -2,6 +2,7 @@ const db = require('../database/db');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const model = require('./userAddressModel');
+const imagemodel = require('./imageModel');
 
 
 const userModel = db.connection.define('user', {
@@ -30,7 +31,15 @@ const userModel = db.connection.define('user', {
             model: 'userRole',
             key: 'id'
         }
-    } 
+    },
+    imageID: {
+        type: db.Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'image',
+            key: 'id'
+        }
+    }
 },
     {
         tablename: 'user',
@@ -49,6 +58,7 @@ userModel.sync({ force: false })
 
 userModel.associate = function (model) {
     userModel.hasMany(model.userAddressModel)
+    userModel.belongsTo(model.imagemodel)
     userModel.belongsTo(model.userRoleModel)
 }
 
@@ -62,6 +72,7 @@ let unique = async (token, body) => {
         if (result === null) {
             let data = body;
             data.roleId = token;
+            data.imageID = "Dafault"
             let insertedData = await userModel.create(body);
             return insertedData;
         } else {

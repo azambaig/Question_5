@@ -152,8 +152,10 @@ const uploadImage = async (req, res) => {
             });
 
         } else {
-            console.log('file received');
+            console.log('file received' + JSON.stringify(req.file));
+            const imageUpload = await imageModel.uploadImage(req.convertedToken, req.file);
             return res.send({
+                result: imageUpload,
                 success: true
             })
         }
